@@ -8,11 +8,14 @@
 
 @import UIKit;
 
-IB_DESIGNABLE
+@protocol BEMCheckBoxDelegate;
+
+// Tell the compiler to assume that no method should have a NULL value
+NS_ASSUME_NONNULL_BEGIN
 
 /**  Tasteful Checkbox for iOS.
  */
-@interface BEMCheckBox : UIView
+IB_DESIGNABLE @interface BEMCheckBox : UIView
 
 /** The different type of boxes available.
  * @see boxType
@@ -59,6 +62,11 @@ typedef NS_ENUM(NSInteger, BEMAnimationType) {
      */
     BEMAnimationTypeFade
 };
+
+/** The object that acts as the delegate of the receiving check box.
+* @discussion The delegate must adopt the \p BEMCheckBoxDelegate protocol. The delegate is not retained.
+ */
+@property (nonatomic, weak) IBOutlet id <BEMCheckBoxDelegate> delegate;
 
 /** This property allows you to retrieve and set (without animation) a value determining whether the BEMCheckBox object is On or Off.
   * Default to NO.
@@ -120,3 +128,29 @@ typedef NS_ENUM(NSInteger, BEMAnimationType) {
 - (void)reload;
 
 @end
+
+
+/** The BEMCheckBoxDelegate protocol. Used to receive life cycle events.
+ */
+@protocol BEMCheckBoxDelegate <NSObject>
+
+@optional
+
+/** Sent to the delegate every time the check box gets tapped.
+ * @discussion This method gets triggered after the properties are updated (on), but before the animations, if any, are completed.
+ * @seealso animationDidStopForCheckBox:
+ * @param checkBox: The BEMCheckBox instance that has been tapped.
+ */
+- (void)didTapCheckBox:(BEMCheckBox*)checkBox;
+
+
+/** Sent to the delegate every time the check box finishes being animated.
+ * @discussion This method gets triggered after the properties are updated (on), and after the animations are completed. It won't be triggered if no animations are started.
+ * @seealso didTapCheckBox:
+ * @param checkBox: The BEMCheckBox instance that was animated.
+ */
+- (void)animationDidStopForCheckBox:(BEMCheckBox *)checkBox;
+
+@end
+
+NS_ASSUME_NONNULL_END
